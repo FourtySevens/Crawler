@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0c131c"><title>Scope · Website intelligence</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="/" aria-label="Scope home"><span class="brand-mark">S<span>↗</span></span><span>scope<span class="brand-dot">.</span></span></a>
+  <div class="workspace"><span class="workspace-icon">⌘</span><div>Local workspace<small>Website intelligence</small></div><span class="local-dot"></span></div>
+  <div class="nav-label">ASSESSMENT</div>
+  <nav aria-label="Assessment sections">
+    <button class="nav-item active" data-view="overview"><span class="nav-icon">◫</span>Overview</button>
+    <button class="nav-item" data-view="urls"><span class="nav-icon">⌘</span>URL inventory<span class="nav-count" id="nav-urls">0</span></button>
+    <button class="nav-item" data-view="findings"><span class="nav-icon">◇</span>Security findings<span class="nav-count" id="nav-findings">0</span></button>
+    <button class="nav-item" data-view="forms"><span class="nav-icon">▤</span>Forms &amp; inputs<span class="nav-count" id="nav-forms">0</span></button>
+  </nav>
+  <div class="nav-label history-label">RECENT SCANS</div><div id="history" class="history"><p class="sidebar-muted">Your scans will appear here.</p></div>
+  <div class="sidebar-footer"><div><span class="local-dot"></span><span id="connection">Connecting…</span></div><small>Scope Crawler <span>v0.1.0</span></small></div>
+</aside>
+<div class="app">
+  <header class="topbar"><div class="breadcrumbs">Workspace <span>/</span> <b id="breadcrumb">Overview</b></div><div class="mode-pill"><span class="local-dot"></span>PASSIVE ASSESSMENT</div></header>
+  <main>
+    <div class="page-heading"><div><div class="eyebrow">DISCOVER. UNDERSTAND. ASSESS.</div><h1 id="view-title">See your application clearly.</h1><p id="view-description">Map your website’s surface and uncover security signals in one place.</p></div><div class="export-actions" id="export-actions" hidden><a id="html-export" class="button secondary" target="_blank" rel="noopener">↗ HTML report</a><a id="json-export" class="button secondary" download="report.json">↓ JSON</a></div></div>
+    <section class="launch-card" aria-label="Configure crawl">
+      <form id="scan-form">
+        <div class="launch-top"><div class="section-label"><span class="target-icon">◎</span> NEW ASSESSMENT</div><span class="muted small">Discover pages. Inspect responses. Build a map.</span></div>
+        <div class="target-row"><label class="target-input"><span>↗</span><input id="target" name="url" type="url" required placeholder="https://your-application.com" aria-label="Target website URL" autocomplete="url"></label><button class="button primary" id="start-button" type="submit">Start crawl <span>→</span></button><button class="button danger" id="stop-button" type="button" hidden>Stop crawl</button></div>
+        <div class="launch-bottom"><div class="config-pills"><span>↳ <b id="pages-hint">1,000</b> responses</span><span>◷ <b id="rate-hint">5</b> requests / sec</span><span>◇ Same origin</span></div><button type="button" id="settings-toggle" class="text-button" aria-expanded="false" aria-controls="settings">Configure scan <span>⌄</span></button></div>
+        <div id="settings" class="settings" hidden>
+          <div class="settings-grid">
+            <label>Response limit<input id="max-pages" type="number" min="1" max="100000" value="1000"></label>
+            <label>Maximum depth<input id="max-depth" type="number" min="0" max="100" value="12"></label>
+            <label>Requests / second<input id="rate" type="number" min="0.1" step="0.1" value="5"></label>
+            <label>Concurrent requests<input id="concurrency" type="number" min="1" max="50" value="5"></label>
+            <label>Request timeout (sec)<input id="timeout" type="number" min="1" value="15"></label>
+            <label>Time budget (sec)<input id="max-duration" type="number" min="1" value="900"></label>
+          </div>
+          <div class="settings-grid two"><label>Additional origins <small>One URL origin per line, including port</small><textarea id="allowed-origins" rows="2" placeholder="https://api.your-application.com"></textarea></label><label>Exclude URL patterns <small>One regular expression per line</small><textarea id="excludes" rows="2" placeholder="/logout&#10;/delete"></textarea></label></div>
+          <div class="checkboxes"><label><input id="subdomains" type="checkbox"> Include subdomains</label><label><input id="robots" type="checkbox"> Respect robots.txt</label><label><input id="sitemaps" type="checkbox" checked> Discover sitemaps</label><label><input id="verify-tls" type="checkbox" checked> Verify TLS certificates</label></div>
+          <details class="auth-settings"><summary>Authentication &amp; proxy</summary><p class="muted small">Headers and cookies apply only to the exact target origin. Values are kept in memory during the scan and omitted from reports.</p><div class="settings-grid two"><label>Request headers (JSON)<textarea id="headers" rows="3" spellcheck="false" placeholder='{"Authorization": "Bearer …"}'></textarea></label><label>Session cookies (JSON)<textarea id="cookies" rows="3" spellcheck="false" placeholder='{"session": "…"}'></textarea></label></div><label class="proxy-label">HTTP proxy<input id="proxy" type="url" placeholder="http://127.0.0.1:8080"></label></details>
+        </div>
+      </form>
+      <div id="error" class="error-banner" role="alert" hidden></div>
+    </section>
+    <div id="scan-bar" class="scan-bar"><div><span id="status-dot" class="status-dot"></span><b id="scan-status">Ready to explore</b><span id="scan-target" class="muted">Configure a target to begin your assessment.</span></div><span id="scan-time" class="muted small">No scan running</span></div>
+    <div id="warnings" class="warnings" hidden></div>
+    <section class="stats" aria-label="Assessment metrics">
+      <div class="stat-card"><div class="stat-label">Responses collected<span class="stat-icon">↳</span></div><div class="stat-value" id="stat-pages">0</div><div class="stat-foot"><span class="mint">●</span><span id="stat-discovered">0 URLs discovered</span></div></div>
+      <div class="stat-card"><div class="stat-label">Security findings<span class="stat-icon">◇</span></div><div class="stat-value" id="stat-findings">0</div><div class="stat-foot"><span class="severity-dot high-dot"></span><span id="stat-high">0 high priority</span></div></div>
+      <div class="stat-card"><div class="stat-label">Forms discovered<span class="stat-icon">▤</span></div><div class="stat-value" id="stat-forms">0</div><div class="stat-foot">Input names, types &amp; actions</div></div>
+      <div class="stat-card"><div class="stat-label">Requests made<span class="stat-icon">⌁</span></div><div class="stat-value" id="stat-requests">0</div><div class="stat-foot" id="stat-errors">0 network errors</div></div>
+    </section>
+    <div id="overview-view" class="view">
+      <div class="overview-grid">
+        <section class="panel"><div class="panel-heading"><h2>Security overview</h2><span class="small muted">Finding instances</span></div><div class="security-content"><div class="donut" id="severity-donut"><div><b id="severity-total">0</b><span>FINDINGS</span></div></div><div class="severity-legend" id="severity-legend"></div></div><div class="panel-note">Passive checks highlight configuration issues and signals for manual review.</div></section>
+        <section class="panel coverage-panel"><div class="panel-heading"><h2>Crawl coverage</h2><span class="badge neutral" id="coverage-badge">AWAITING TARGET</span></div><div id="coverage-bars" class="coverage-bars"></div><div class="panel-note" id="coverage-note">Discovery follows links, redirects, scripts, robots.txt, and nested sitemaps.</div></section>
+      </div>
+      <section class="panel activity-panel"><div class="panel-heading"><h2>Recent responses</h2><button class="text-button" data-view="urls">View inventory <span>→</span></button></div><div id="recent-pages"></div></section>
+    </div>
+    <section id="urls-view" class="view panel" hidden><div class="panel-heading"><div><h2>URL inventory</h2><span class="small muted" id="inventory-note">Pages, assets, endpoints, and external references</span></div><input class="search-input" id="url-search" type="search" placeholder="Search URLs or titles…" aria-label="Search URLs"></div><div class="table-controls"><select id="url-state" aria-label="Filter URL state"><option value="">All states</option><option value="fetched">Fetched</option><option value="inventory_only">Inventory only</option><option value="out_of_scope">Out of scope</option><option value="excluded">Excluded</option><option value="error">Error</option><option value="pending">Pending</option><option value="depth_limit">Depth limit</option><option value="variant_limit">Variant limit</option><option value="robots_blocked">Robots blocked</option></select><span id="url-count" class="muted small"></span></div><div id="url-table"></div></section>
+    <section id="findings-view" class="view panel" hidden><div class="panel-heading"><h2>Security findings</h2><select id="severity-filter" aria-label="Filter finding severity"><option value="">All severities</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option><option value="info">Informational</option></select></div><div class="finding-note">Review evidence and confidence before treating a finding as an exploitable vulnerability.</div><div id="finding-list" class="finding-list"></div></section>
+    <section id="forms-view" class="view panel" hidden><div class="panel-heading"><h2>Forms &amp; inputs</h2><span class="small muted">Field values omitted · Forms are not submitted</span></div><div id="form-list"></div></section>
+    <footer class="main-footer"><span><span class="mint">◎</span> Built for visibility. Designed for investigation.</span><span>Scope Crawler · Local workspace</span></footer>
+  </main>
+</div>
+</body></html>
